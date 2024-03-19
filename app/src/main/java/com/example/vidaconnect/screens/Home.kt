@@ -19,13 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.ContentPasteSearch
-import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SupportAgent
-import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -47,6 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.vidaconnect.R
 import com.example.vidaconnect.ui.theme.Primary
 import com.example.vidaconnect.ui.theme.Secondary
@@ -54,7 +53,7 @@ import com.example.vidaconnect.ui.theme.TextGray
 import com.example.vidaconnect.ui.theme.VidaConnectTheme
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     VidaConnectTheme {
         Surface {
             Column(
@@ -123,30 +122,35 @@ fun HomeScreen() {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                     ) {
-                        item {
-                            MenuButton(
-                                title = "Histórico médico",
-                                icon = Icons.Outlined.ContentPasteSearch
-                            )
-                        }
+//                        item {
+//                            MenuButton(
+//                                title = "Histórico médico",
+//                                icon = Icons.Outlined.ContentPasteSearch,
+//                                navController
+//
+//                            )
+//                        }
                         item {
                             MenuButton(
                                 title = "Consultas",
-                                icon = Icons.Outlined.CalendarMonth
+                                icon = Icons.Outlined.CalendarMonth,
+                                navController
                             )
                         }
-                        item {
-                            MenuButton(
-                                title = "Exames",
-                                icon = Icons.Outlined.Task
-                            )
-                        }
-                        item {
-                            MenuButton(
-                                title = "Agenda",
-                                icon = Icons.Outlined.Event
-                            )
-                        }
+//                        item {
+//                            MenuButton(
+//                                title = "Exames",
+//                                icon = Icons.Outlined.Task,
+//                                navController
+//                            )
+//                        }
+//                        item {
+//                            MenuButton(
+//                                title = "Agenda",
+//                                icon = Icons.Outlined.Event,
+//                                navController
+//                            )
+//                        }
                     }
                 }
                 Row {
@@ -197,15 +201,16 @@ fun HomeScreen() {
 
 
 @Composable
-fun MenuButton(title: String, icon: ImageVector) {
+fun MenuButton(title: String, icon: ImageVector, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(140.dp)
             .padding(10.dp)
             .clickable {
-                println("Click!")
-            }
+                navController.navigate("appointment")
+            },
+
     ) {
         Box(
             modifier = Modifier
@@ -237,5 +242,6 @@ fun MenuButton(title: String, icon: ImageVector) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen()
+    val navController = rememberNavController()
+    HomeScreen(navController)
 }

@@ -43,6 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.vidaconnect.ui.theme.Primary
 import com.example.vidaconnect.ui.theme.Secondary
 import com.example.vidaconnect.ui.theme.TextDarkGray
@@ -50,7 +52,7 @@ import com.example.vidaconnect.ui.theme.VidaConnectTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppointmentScreen() {
+fun AppointmentScreen(navController: NavController) {
     var search by remember { mutableStateOf("") }
 
     VidaConnectTheme(darkTheme = false) {
@@ -67,7 +69,7 @@ fun AppointmentScreen() {
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = { /* doSomething() */ }) {
+                        IconButton(onClick = { navController.navigate("home") }) {
                             Icon(
                                 imageVector = Icons.Outlined.ArrowBack,
                                 contentDescription = "Back button",
@@ -209,7 +211,8 @@ fun AppointmentCard() {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun AppointmentScreenPreview() {
-    AppointmentScreen()
+    val navController = rememberNavController()
+    AppointmentScreen(navController)
 }
 
 @Preview(showBackground = false)
