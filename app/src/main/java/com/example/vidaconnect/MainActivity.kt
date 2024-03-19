@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.vidaconnect.screens.AppointmentScreen
 import com.example.vidaconnect.screens.HomeScreen
 import com.example.vidaconnect.ui.theme.VidaConnectTheme
 
@@ -14,7 +15,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreen()
+//            HomeScreen()
+            AppointmentScreen()
         }
     }
 }
