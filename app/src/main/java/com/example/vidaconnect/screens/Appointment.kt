@@ -105,7 +105,7 @@ fun AppointmentScreen() {
                         onValueChange = {
                             search = it
                         },
-
+                        shape = RoundedCornerShape(10.dp)
                         )
 
 
