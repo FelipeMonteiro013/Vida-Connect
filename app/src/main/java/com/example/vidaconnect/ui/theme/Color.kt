@@ -16,4 +16,5 @@ val Secondary = Color(0xFF047186)
 val TextDarkBlue = Color(0XFF273647)
 val TextDarkGray = Color(0XFF2F2F2F)
 val TextGray = Color(0XFFA0A0A0)
+val BackgroundColor = Color(0XFFF5F5F5)
 

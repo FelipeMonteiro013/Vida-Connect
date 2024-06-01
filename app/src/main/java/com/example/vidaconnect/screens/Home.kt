@@ -19,10 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.ContentPasteSearch
+import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SupportAgent
+import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -122,14 +125,14 @@ fun HomeScreen(navController: NavController) {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                     ) {
-//                        item {
-//                            MenuButton(
-//                                title = "Histórico médico",
-//                                icon = Icons.Outlined.ContentPasteSearch,
-//                                navController
-//
-//                            )
-//                        }
+                        item {
+                            MenuButton(
+                                title = "Histórico médico",
+                                icon = Icons.Outlined.ContentPasteSearch,
+                                navController
+
+                            )
+                        }
                         item {
                             MenuButton(
                                 title = "Consultas",
@@ -137,20 +140,20 @@ fun HomeScreen(navController: NavController) {
                                 navController
                             )
                         }
-//                        item {
-//                            MenuButton(
-//                                title = "Exames",
-//                                icon = Icons.Outlined.Task,
-//                                navController
-//                            )
-//                        }
-//                        item {
-//                            MenuButton(
-//                                title = "Agenda",
-//                                icon = Icons.Outlined.Event,
-//                                navController
-//                            )
-//                        }
+                        item {
+                            MenuButton(
+                                title = "Exames",
+                                icon = Icons.Outlined.Task,
+                                navController
+                            )
+                        }
+                        item {
+                            MenuButton(
+                                title = "Agenda",
+                                icon = Icons.Outlined.Event,
+                                navController
+                            )
+                        }
                     }
                 }
                 Row {
