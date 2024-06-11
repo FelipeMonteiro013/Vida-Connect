@@ -1,6 +1,7 @@
 package com.example.vidaconnect.screens
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -50,10 +52,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.vidaconnect.R
+import com.example.vidaconnect.model.User
+import com.example.vidaconnect.service.RetrofitFactory
 import com.example.vidaconnect.ui.theme.Primary
 import com.example.vidaconnect.ui.theme.Secondary
 import com.example.vidaconnect.ui.theme.TextGray
 import com.example.vidaconnect.ui.theme.VidaConnectTheme
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -64,6 +71,25 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
+                Button(onClick = {
+                    var call = RetrofitFactory().getUserService().getUsers()
+
+                    call.enqueue(object : Callback<List<User>>{
+                        override fun onResponse(
+                            call: Call<List<User>>,
+                            response: Response<List<User>>
+                        ) {
+                            Log.i("TESTE", response.body().toString())
+                        }
+
+                        override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                            Log.e("TESTE", t.message.toString())
+                        }
+
+                    })
+                }) {
+                    Text(text = "Chamada da API")
+                }
                 Column {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
