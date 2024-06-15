@@ -62,11 +62,11 @@ import retrofit2.Response
 fun LoginScreen(navHostController: NavHostController) {
 
     var emailState by remember {
-        mutableStateOf("felipe@email5.com")
+        mutableStateOf("")
     }
 
     var passwordState by remember {
-        mutableStateOf("123")
+        mutableStateOf("")
     }
     var passwordVisible by remember {
         mutableStateOf(false)
