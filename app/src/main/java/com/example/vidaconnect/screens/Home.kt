@@ -1,7 +1,6 @@
 package com.example.vidaconnect.screens
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,11 +22,11 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ContentPasteSearch
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material.icons.outlined.Task
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -35,7 +34,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,201 +44,194 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.vidaconnect.R
 import com.example.vidaconnect.model.User
-import com.example.vidaconnect.service.RetrofitFactory
 import com.example.vidaconnect.ui.theme.Primary
 import com.example.vidaconnect.ui.theme.Secondary
 import com.example.vidaconnect.ui.theme.TextGray
 import com.example.vidaconnect.ui.theme.VidaConnectTheme
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.gson.Gson
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, user: User) {
     VidaConnectTheme {
-        Surface {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                Button(onClick = {
-                    var call = RetrofitFactory().getUserService().getUsers()
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxHeight()
+        ) {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                ) {
+                    Image(
+                        painterResource(id = R.drawable.vida_connect_logo),
+                        contentDescription = null,
 
-                    call.enqueue(object : Callback<List<User>>{
-                        override fun onResponse(
-                            call: Call<List<User>>,
-                            response: Response<List<User>>
-                        ) {
-                            Log.i("TESTE", response.body().toString())
-                        }
-
-                        override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                            Log.e("TESTE", t.message.toString())
-                        }
-
-                    })
-                }) {
-                    Text(text = "Chamada da API")
-                }
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.vida_connect_logo),
-                            contentDescription = null,
-
-                            Modifier.size(100.dp)
-                        )
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Notifications,
-                                contentDescription = null,
-                                tint = Primary,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                    ) {
-                        Text(text = "Olá,", fontSize = 20.sp, color = Secondary)
-                        Text(
-                            text = "Usuário",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Secondary
-                        )
-                    }
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .padding(vertical = 20.dp),
-                        value = "",
-                        onValueChange = {},
-                        placeholder = {
-                            Text(text = "O que você procura hoje?")
-                        },
-                        maxLines = 1,
-                        suffix = {
-                            Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedSuffixColor = Primary,
-                            unfocusedBorderColor = Primary,
-                            unfocusedPlaceholderColor = TextGray
-                        ),
-                        shape = RoundedCornerShape(10.dp)
-
+                        Modifier.size(100.dp)
                     )
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                    ) {
-                        item {
-                            MenuButton(
-                                title = "Histórico médico",
-                                icon = Icons.Outlined.ContentPasteSearch,
-                                navController
-
-                            )
-                        }
-                        item {
-                            MenuButton(
-                                title = "Consultas",
-                                icon = Icons.Outlined.CalendarMonth,
-                                navController
-                            )
-                        }
-                        item {
-                            MenuButton(
-                                title = "Exames",
-                                icon = Icons.Outlined.Task,
-                                navController
-                            )
-                        }
-                        item {
-                            MenuButton(
-                                title = "Agenda",
-                                icon = Icons.Outlined.Event,
-                                navController
-                            )
-                        }
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Notifications,
+                            contentDescription = null,
+                            tint = Primary,
+                            modifier = Modifier.size(30.dp)
+                        )
                     }
                 }
-                Row {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                ) {
+                    Text(text = "Olá, ", fontSize = 20.sp, color = Secondary)
+                    Text(
+                        text = user.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Secondary
+                    )
+                }
+                OutlinedTextField(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp),
+                    value = "",
+                    onValueChange = {},
+                    placeholder = {
+                        Text(text = "O que você procura hoje?")
+                    },
+                    maxLines = 1,
+                    suffix = {
+                        Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedSuffixColor = Primary,
+                        unfocusedBorderColor = Primary,
+                        unfocusedPlaceholderColor = TextGray
+                    ),
+                    shape = RoundedCornerShape(10.dp)
 
-
-                    NavigationBar(
-                        containerColor = Primary,
-                        modifier = Modifier.clip(RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp))
-                    ) {
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
-                            label = { Text("Início") },
-                            selected = true,
-                            onClick = { },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color.White,
-                                unselectedIconColor = Secondary,
-                                selectedTextColor = Color.White,
-                                unselectedTextColor = Secondary,
-                                indicatorColor = Primary
-
-                            )
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Outlined.SupportAgent, contentDescription = null) },
-                            label = { Text("Atendimento") },
-                            selected = false,
-                            onClick = { }
-                        )
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.AccountCircle,
-                                    contentDescription = null
-                                )
-                            },
-                            label = { Text("Perfil") },
-                            selected = false,
-                            onClick = { }
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                ) {
+//                    item {
+//                        MenuButton(
+//                            title = "Histórico médico",
+//                            icon = Icons.Outlined.ContentPasteSearch,
+//                            navController,
+//                            user
+//
+//                        )
+//                    }
+                    item {
+                        MenuButton(
+                            title = "Consultas",
+                            icon = Icons.Outlined.CalendarMonth,
+                            navController,
+                            user
                         )
                     }
+//                    item {
+//                        MenuButton(
+//                            title = "Exames",
+//                            icon = Icons.Outlined.Task,
+//                            navController,
+//                            user
+//                        )
+//                    }
+//                    item {
+//                        MenuButton(
+//                            title = "Agenda",
+//                            icon = Icons.Outlined.Event,
+//                            navController,
+//                            user
+//                        )
+//                    }
                 }
             }
-        }
+            Row {
 
+
+                NavigationBar(
+                    containerColor = Primary,
+                    modifier = Modifier.clip(
+                        RoundedCornerShape(
+                            topEnd = 10.dp,
+                            topStart = 10.dp
+                        )
+                    )
+                ) {
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
+                        label = { Text("Início") },
+                        selected = true,
+                        onClick = { },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.White,
+                            unselectedIconColor = Secondary,
+                            selectedTextColor = Color.White,
+                            unselectedTextColor = Secondary,
+                            indicatorColor = Primary
+
+                        )
+                    )
+//                    NavigationBarItem(
+//                        icon = {
+//                            Icon(
+//                                Icons.Outlined.SupportAgent,
+//                                contentDescription = null
+//                            )
+//                        },
+//                        label = { Text("Atendimento") },
+//                        selected = false,
+//                        onClick = { }
+//                    )
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Logout,
+                                contentDescription = null
+                            )
+                        },
+                        label = { Text("Sair") },
+                        selected = false,
+                        onClick = {
+                            navController.navigate("login")
+                        }
+                    )
+                }
+            }
+
+        }
     }
+
 }
 
 
+
 @Composable
-fun MenuButton(title: String, icon: ImageVector, navController: NavController) {
+fun MenuButton(title: String, icon: ImageVector, navController: NavController, user: User) {
+    val userJson = Gson().toJson(user)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(140.dp)
             .padding(10.dp)
             .clickable {
-                navController.navigate("appointment")
+                navController.navigate("appointment/$userJson")
             },
 
-    ) {
+        ) {
         Box(
             modifier = Modifier
                 .size(120.dp)
@@ -266,11 +257,4 @@ fun MenuButton(title: String, icon: ImageVector, navController: NavController) {
             color = Secondary
         )
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    HomeScreen(navController)
 }

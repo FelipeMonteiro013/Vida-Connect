@@ -2,11 +2,12 @@ package com.example.vidaconnect.model
 
 import com.google.gson.annotations.SerializedName
 
-data class User (
+data class Clinic(
     @SerializedName("_id")  val id: String ? = null,
-    val document: String = "",
-    val name: String = "",
+    val corporateReason: String = "",
+    val cnpj: String = "",
+    val address: String = "",
+    val phone: String = "",
     val email: String = "",
-    val password: String? = null,
-    @SerializedName("dt_nasc") val dtNasc: String = "",
+    val status: Boolean,
 )

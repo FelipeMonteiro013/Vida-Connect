@@ -13,7 +13,10 @@ class RetrofitFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    fun getUserService(): UserService {
+    fun userService(): UserService {
         return retrofitFactory.create(UserService::class.java)
+    }
+    fun medicalAppointment(): MedicalAppointmentService {
+        return retrofitFactory.create(MedicalAppointmentService::class.java)
     }
 }

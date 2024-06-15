@@ -1,6 +1,10 @@
 package com.example.vidaconnect.screens
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,33 +17,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowDropUp
 import androidx.compose.material.icons.outlined.ArrowForwardIos
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MedicalServices
-import androidx.compose.material.icons.outlined.PeopleOutline
-import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Card
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,22 +52,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.vidaconnect.ui.theme.BackgroundColor
+import com.example.vidaconnect.model.MedicalAppointment
+import com.example.vidaconnect.model.User
+import com.example.vidaconnect.service.RetrofitFactory
 import com.example.vidaconnect.ui.theme.Primary
 import com.example.vidaconnect.ui.theme.Secondary
 import com.example.vidaconnect.ui.theme.TextDarkGray
 import com.example.vidaconnect.ui.theme.VidaConnectTheme
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppointmentScreen(navController: NavController) {
-    var search by remember { mutableStateOf("") }
+fun AppointmentScreen(navController: NavController, user: User) {
+    val userId by remember {
+        mutableStateOf(user.id)
+    }
+
+    val appointmentList = listOf<MedicalAppointment>()
+
+    var listAppointment by remember {
+        mutableStateOf(appointmentList)
+    }
+
+    val call = RetrofitFactory().medicalAppointment().getMedicalAppointmentByPatientId(userId!!)
+
+    call.enqueue(object : Callback<List<MedicalAppointment>> {
+        override fun onResponse(
+            call: Call<List<MedicalAppointment>>,
+            response: Response<List<MedicalAppointment>>
+        ) {
+            listAppointment = response.body()!!
+        }
+
+        override fun onFailure(call: Call<List<MedicalAppointment>>, t: Throwable) {
+            Log.e("TESTE", t.message.toString())
+        }
+
+    })
 
     VidaConnectTheme(darkTheme = false) {
         Surface {
@@ -81,7 +113,8 @@ fun AppointmentScreen(navController: NavController) {
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = { navController.navigate("home") }) {
+                        val userJson = Gson().toJson(user)
+                        IconButton(onClick = { navController.navigate("home/${userJson}") }) {
                             Icon(
                                 imageVector = Icons.Outlined.ArrowBack,
                                 contentDescription = "Back button",
@@ -91,56 +124,6 @@ fun AppointmentScreen(navController: NavController) {
                     },
                 )
 
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp, bottom = 20.dp),
-                ) {
-                    OutlinedTextField(
-                        placeholder = { Text(text = "Pesquisar consulta") },
-                        maxLines = 1,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 10.dp),
-                        suffix = {
-                            Icon(Icons.Outlined.Search, contentDescription = "")
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedLabelColor = Primary,
-                            unfocusedBorderColor = Primary,
-                            unfocusedSuffixColor = Primary,
-                            focusedLabelColor = Secondary,
-                            focusedBorderColor = Secondary,
-                            focusedSuffixColor = Secondary,
-
-                            ),
-                        value = search,
-                        onValueChange = {
-                            search = it
-                        },
-                        shape = RoundedCornerShape(10.dp)
-                    )
-
-
-                    Box(
-                        modifier = Modifier
-                            .width(58.dp)
-                            .height(58.dp)
-                            .clip(shape = RoundedCornerShape(10.dp))
-                            .background(Primary),
-                        contentAlignment = Alignment.Center
-
-
-                    ) {
-                        Icon(
-                            Icons.Outlined.CalendarMonth,
-                            contentDescription = "",
-                            tint = Color.White,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -155,23 +138,28 @@ fun AppointmentScreen(navController: NavController) {
 
 
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 15.dp)
-                        ) {
-
-                            Icon(
-                                Icons.Outlined.Add,
-                                contentDescription = "",
-                                tint = Color.White,
-                                modifier = Modifier.size(25.dp)
-                            )
-                            Text(
-                                text = "Nova consulta",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            modifier = Modifier
+//                                .padding(horizontal = 15.dp)
+//                                .clickable {
+//                                    val userJson = Gson().toJson(user)
+//                                    navController.navigate("new_appointment/${userJson}")
+//                                }
+//                        ) {
+//
+//                            Icon(
+//                                Icons.Outlined.Add,
+//                                contentDescription = "",
+//                                tint = Color.White,
+//                                modifier = Modifier.size(25.dp)
+//                            )
+//                            Text(
+//                                text = "Nova consulta",
+//                                color = Color.White,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                        }
                     }
                 }
                 Text(
@@ -182,27 +170,51 @@ fun AppointmentScreen(navController: NavController) {
                 )
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
+                if (listAppointment.isEmpty()) {
+                    Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.fillMaxHeight()
-                ) {
-                    items(20) { AppointmentCard(navController) }
+                    CircularProgressIndicator(
+                        modifier = Modifier.width(64.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    }
+                } else {
+
+
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        items(listAppointment) { appointment ->
+                            AppointmentCard(
+                                navController,
+                                appointment
+                            )
+                        }
+                    }
                 }
-
             }
+
         }
     }
-
 }
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppointmentCard(navController: NavController) {
+fun AppointmentCard(
+    navController: NavController,
+    appointment: MedicalAppointment,
+) {
+
+    var showDetails by remember {
+        mutableStateOf(false)
+    }
+
     ElevatedCard(
         modifier = Modifier
-            .fillMaxWidth()
-
-            .height(100.dp),
+            .fillMaxWidth(),
 
         colors = CardDefaults.cardColors(Color.White)
     ) {
@@ -228,27 +240,110 @@ fun AppointmentCard(navController: NavController) {
 
             ) {
                 Text(
-                    text = "Hospital Santa Marta",
+                    text = appointment.clinicId!!.corporateReason,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextDarkGray
                 )
                 Text(
-                    text = "Cardiologista", fontSize = 17.sp, color = TextDarkGray
+                    text = appointment.doctorId.name, fontSize = 17.sp, color = TextDarkGray
+                )
+
+                // Data no formato original
+                val dataOriginal = appointment.date
+
+                // Converter para um objeto ZonedDateTime
+                val zonedDateTime = ZonedDateTime.parse(dataOriginal)
+
+                // Definir o formato desejado
+                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm")
+
+                // Converter para o formato desejado
+                val dataFormatada = zonedDateTime.format(formatter)
+
+                Text(
+                    text = dataFormatada, fontSize = 18.sp, color = Secondary
                 )
                 Text(
-                    text = "18/03/2024 - 09:30", fontSize = 18.sp, color = Secondary
+                    text = "Status: ${appointment.status}", fontSize = 18.sp, color = Secondary
                 )
             }
             IconButton(onClick = {
-                navController.navigate("medical_appointment_details")
+                showDetails = !showDetails
             }) {
-                Icon(
-                    Icons.Outlined.ArrowForwardIos,
-                    contentDescription = "",
-                    tint = TextDarkGray,
+                if (showDetails) {
+                    Icon(
+                        Icons.Outlined.ArrowDropUp,
+                        contentDescription = "",
+                        tint = TextDarkGray,
 
+                        )
+                } else {
+                    Icon(
+                        Icons.Outlined.ArrowDropDown,
+                        contentDescription = "",
+                        tint = TextDarkGray,
+
+                        )
+                }
+            }
+        }
+        if (showDetails) {
+
+
+            Divider()
+            Column(modifier = Modifier.padding(10.dp)) {
+
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(
+                        text = "Informações da consulta",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Secondary
                     )
+                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = Secondary)
+                    Text(text = "Paciente: ${appointment.patientId.name}")
+
+                    // Data no formato original
+                    val dataOriginal = appointment.patientId.dtNasc
+
+                    // Converter para um objeto ZonedDateTime
+                    val zonedDateTime = ZonedDateTime.parse(dataOriginal)
+
+                    // Definir o formato desejado
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+                    // Converter para o formato desejado
+                    val dataFormatada = zonedDateTime.format(formatter)
+
+                    Text(text = dataFormatada)
+                    Text(text = appointment.reason)
+                    Text(text = appointment.symptoms)
+                    Text(text = appointment.medicalHistory)
+                    Text(
+                        text = "Local da consulta",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Secondary,
+                        modifier = Modifier.padding(top = 30.dp)
+                    )
+                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = Secondary)
+                    Text(text = appointment.clinicId!!.corporateReason)
+                    Text(text = appointment.clinicId.address)
+                    Text(text = appointment.clinicId.email)
+                    Text(text = appointment.clinicId.phone)
+                    Text(
+                        text = "Médico",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Secondary,
+                        modifier = Modifier.padding(top = 30.dp)
+                    )
+                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = Secondary)
+                    Text(text = appointment.doctorId.name)
+                    Text(text = appointment.doctorId.crm)
+                    Text(text = appointment.doctorId.email)
+                }
             }
         }
     }
@@ -267,112 +362,3 @@ fun AppointmentCard(navController: NavController) {
 //    AppointmentCard()
 //}
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun MedicalAppointmentDetailsScreenPreview() {
-    val navController = rememberNavController()
-    MedicalAppointmentDetailsScreen(navController)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MedicalAppointmentDetailsScreen(navController: NavHostController) {
-    Surface {
-        Column(
-            modifier = Modifier
-                .background(BackgroundColor)
-                .fillMaxSize()
-        ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
-
-            ) {
-                Row(modifier = Modifier.padding(20.dp)) {
-                    Icon(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(100.dp),
-                        imageVector = Icons.Outlined.Photo,
-                        contentDescription = ""
-                    )
-                    Column(verticalArrangement = Arrangement.SpaceEvenly) {
-                        Text(
-                            text = "Dr. Danilo Oliveira",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Primary
-                        )
-                        Text(text = "Dermatologista", fontSize = 18.sp)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Outlined.LocationOn, contentDescription = "")
-                            Text(text = "São Paulo, SP", fontSize = 18.sp)
-                        }
-                    }
-                }
-                Divider(modifier = Modifier.padding(horizontal = 20.dp))
-                Row(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-//                    TODO: Vai virar um componente
-                    for (i in 1..3)
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Outlined.PeopleOutline,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clip(shape = RoundedCornerShape(10.dp))
-                                    .background(color = Primary.copy(alpha = 0.2f))
-                                    .padding(10.dp),
-                                tint = Secondary
-
-                            )
-                            Text(text = "3.500+", fontSize = 18.sp, color = Primary)
-                            Text(text = "Pacientes", fontSize = 16.sp)
-                        }
-                }
-
-            }
-            val datePickerState =
-                rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
-            DatePicker(
-                state = datePickerState,
-                modifier = Modifier.padding(16.dp),
-                showModeToggle = false,
-                title = {
-                    Text(
-                        text = "Selecionar data",
-                        fontSize = 18.sp,
-                        color = Secondary,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = DatePickerDefaults.colors(selectedDayContainerColor = Secondary)
-            )
-
-            Text(
-                text = "Selecione um horario",
-                fontSize = 18.sp,
-                color = Secondary,
-                fontWeight = FontWeight.Bold
-            )
-            LazyRow {
-                item {
-                    Text(
-                        text = "Selecione um horario",
-                        fontSize = 18.sp,
-                        color = Secondary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
-    }
-}
